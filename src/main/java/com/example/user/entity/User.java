@@ -2,14 +2,16 @@ package com.example.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Getter
 @NoArgsConstructor
@@ -30,8 +32,16 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private AuthorityEnum authority;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "json")
+    private Set<String> authorities;
 
+    public User(String username, String nickname, String password, String authorityName) {
+        this.username = username;
+        this.nickname = nickname;
+        this.password = password;
+        this.authorities = new HashSet<>();
+
+        authorities.add(authorityName);
+    }
 }
