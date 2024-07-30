@@ -60,6 +60,8 @@ public class SecurityConfig {
             (authorizeHttpRequests) -> authorizeHttpRequests
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                 .requestMatchers("/v1/users/signup").permitAll()
+                .requestMatchers("/swagger-ui/index.html").permitAll()
+                .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
         );
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
