@@ -41,7 +41,11 @@ public class User {
         this.nickname = nickname;
         this.password = password;
         this.authorities = new HashSet<>();
-
         authorities.add(authorityName);
+    }
+
+    public User(Long userId, String username) {
+        this.id = userId;
+        this.username = username;
     }
 }
