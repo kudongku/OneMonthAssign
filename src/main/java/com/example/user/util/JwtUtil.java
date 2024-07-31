@@ -24,7 +24,7 @@ public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String BEARER_PREFIX = "Bearer ";
     private static final long TOKEN_VALIDITY = 60 * 60 * 1000L; // 1 hours
-    private static final long REFRESH_TOKEN_VALIDITY = 7 * 60 * 60 * 1000L; // 7 hours
+    private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000L; // 7 hours
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     private Key key;
 
