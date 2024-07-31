@@ -13,6 +13,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -41,9 +44,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
             try {
                 Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
-                Long userId = info.get("userId", Long.class);
+                List<String> authorityList = info.get("Authority", List.class);
+                Set<String> authorities = new HashSet<>(authorityList);
                 String username = info.getSubject();
-                setAuthentication(userId, username);
+                setAuthentication(authorities, username);
             } catch (SecurityException | MalformedJwtException e) {
                 log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
                 return;
@@ -66,15 +70,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(req, res);
     }
 
-    public void setAuthentication(Long userId, String username) {
+    public void setAuthentication(Set<String> authorities, String username) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        Authentication authentication = createAuthentication(userId, username);
+        Authentication authentication = createAuthentication(authorities, username);
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
     }
 
-    private Authentication createAuthentication(Long userId, String username) {
-        User user = new User(userId, username);
+    private Authentication createAuthentication(Set<String> authorities, String username) {
+        User user = new User(authorities, username);
         UserDetails userDetails = new UserDetailsImpl(user);
         return new CustomAuthentication(userDetails);
     }
