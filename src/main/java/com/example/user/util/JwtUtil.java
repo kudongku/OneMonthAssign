@@ -38,9 +38,9 @@ public class JwtUtil {
         return buildToken(authorities, username, TOKEN_VALIDITY);
     }
 
-//    public String createRefreshToken(Set<String> authorities, String username) {
-//        return buildToken(authorities, username, REFRESH_TOKEN_VALIDITY);
-//    }
+    public String createRefreshToken(Set<String> authorities, String username) {
+        return buildToken(authorities, username, REFRESH_TOKEN_VALIDITY);
+    }
 
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);

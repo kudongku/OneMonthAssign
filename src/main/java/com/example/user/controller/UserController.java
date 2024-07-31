@@ -8,6 +8,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,4 +42,14 @@ public class UserController {
     public ResponseEntity<String> login(@RequestBody UserLoginRequestDto loginRequest) {
         return ResponseEntity.ok("로그인 요청이 필터에서 처리됩니다.");
     }
+
+    @Operation(summary = "refreshToken", description = "토큰 만료기한을 연장합니다.")
+    @PostMapping("/refreshToken")
+    public void refreshToken(
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) throws IOException {
+        userService.createRefreshToken(request, response);
+    }
+
 }
