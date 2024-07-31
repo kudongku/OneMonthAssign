@@ -44,8 +44,8 @@ public class User {
         authorities.add(authorityName);
     }
 
-    public User(Long userId, String username) {
-        this.id = userId;
+    public User(Set<String> authorities, String username) {
+        this.authorities = authorities;
         this.username = username;
     }
 

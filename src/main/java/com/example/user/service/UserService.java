@@ -5,6 +5,14 @@ import com.example.user.dto.UserSignupResponseDto;
 import com.example.user.entity.AuthorityEnum;
 import com.example.user.entity.User;
 import com.example.user.repository.UserRepository;
+import com.example.user.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -32,7 +41,11 @@ public class UserService {
 
         userRepository.save(user);
 
-        return new UserSignupResponseDto(user.getUsername(), user.getNickname(), user.getAuthorities());
+        return new UserSignupResponseDto(
+            user.getUsername(),
+            user.getNickname(),
+            user.getAuthorities()
+        );
     }
 
     private void validateNickname(String nickname) {
@@ -51,4 +64,38 @@ public class UserService {
 
     }
 
+    public void createRefreshToken(
+        HttpServletRequest request,
+        HttpServletResponse response
+    ) throws IOException {
+        String authHeader = request.getHeader(JwtUtil.AUTHORIZATION_HEADER);
+
+        if (authHeader == null || !authHeader.startsWith(JwtUtil.BEARER_PREFIX)) {
+            return;
+        }
+
+        String accessToken = authHeader.substring(7);
+        Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
+        String username = claims.getSubject();
+
+        if (username != null) {
+            User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new RuntimeException("유효하지 않은 아이디입니다.")
+            );
+
+            String refreshToken = jwtUtil.createRefreshToken(
+                user.getAuthorities(),
+                user.getUsername()
+            );
+            Map<String, String> tokenMap = new HashMap<>();
+            tokenMap.put("accessToken", accessToken);
+            tokenMap.put("refreshToken", refreshToken);
+
+            response.addHeader(JwtUtil.AUTHORIZATION_HEADER, refreshToken);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            new ObjectMapper().writeValue(response.getWriter(), tokenMap);
+
+        }
+    }
 }
