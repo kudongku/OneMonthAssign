@@ -48,4 +48,18 @@ public class User {
         this.id = userId;
         this.username = username;
     }
+
+    public User(
+        Long id,
+        String username,
+        String nickname,
+        String password,
+        Set<String> authorities
+    ) {
+        this.id = id;
+        this.username = username;
+        this.nickname = nickname;
+        this.password = password;
+        this.authorities = authorities;
+    }
 }
