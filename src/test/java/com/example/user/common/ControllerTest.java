@@ -1,6 +1,5 @@
-package com.example.user.controller;
+package com.example.user.common;
 
-import com.example.user.common.UserFixture;
 import com.example.user.config.SecurityConfig;
 import com.example.user.dto.UserDetailsImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
